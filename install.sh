@@ -1,11 +1,11 @@
 #!/bin/bash
-echo "🚀 Installing Cloud Panel dependencies..."
+
+echo "🚀 Installing..."
+
 apt update -y
-apt install -y python3 python3-pip git docker.io nginx
+apt install -y python3 python3-pip
 
-echo "✅ Installing Python packages..."
-pip3 install -r requirements.txt
+pip3 install flask requests
 
-echo "✅ Starting Cloud Panel..."
+echo "✅ Starting panel..."
 nohup python3 app.py &
-echo "Visit: http://YOUR_SERVER_IP:5000"
