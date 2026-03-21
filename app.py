@@ -1,23 +1,34 @@
 import json
 from flask import Flask, request, session, redirect, render_template
 
-# IMPORTANT FIX (templates + static)
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "supersecretkey"
 
-# Load users
+# Load users safely
 def load_users():
-    with open("users.json") as f:
-        return json.load(f)
+    try:
+        with open("users.json") as f:
+            return json.load(f)
+    except:
+        return {}
 
 def save_users(users):
     with open("users.json","w") as f:
         json.dump(users, f, indent=4)
 
-# Login route
+# 🔥 ROOT FIX (MOST IMPORTANT)
+@app.route("/")
+def home():
+    user = session.get("user")
+    if user:
+        return redirect("/index")
+    return redirect("/login")
+
+# Login
 @app.route("/login", methods=["GET","POST"])
 def login():
     USERS = load_users()
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -26,9 +37,11 @@ def login():
 
         if user and user["password"] == password:
             session["user"] = username
-            return redirect("/index")   # 🔥 FIX: direct dashboard
-        else:
-            return "Invalid credentials", 401
+            if user.get("role") == "admin":
+                return redirect("/admin")   # 🔥 admin direct
+            return redirect("/index")
+
+        return "Invalid credentials", 401
 
     return render_template("login.html")
 
@@ -39,7 +52,7 @@ def admin_panel():
     user = session.get("user")
 
     if not user or USERS.get(user, {}).get("role") != "admin":
-        return "Access denied", 403
+        return redirect("/login")  # 🔥 better fix
 
     return render_template("admin.html")
 
@@ -86,7 +99,7 @@ def register():
 
     return render_template("register.html")
 
-# Logout (NEW)
+# Logout
 @app.route("/logout")
 def logout():
     session.clear()
