@@ -1,140 +1,142 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Cloud Panel - Console</title>
-
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<title>Server Console</title>
 
 <style>
 body {
-    background: linear-gradient(135deg,#020617,#0f172a);
+    margin: 0;
+    font-family: monospace;
+    background: #0f172a;
     color: white;
-    font-family: Arial;
 }
 
-.topbar {
-    padding: 15px;
-    font-size: 22px;
-    font-weight: bold;
-}
-
-.tabs {
+/* Layout */
+.container {
     display: flex;
-    gap: 20px;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background: #020617;
+    padding: 20px;
+}
+
+.sidebar a {
+    display: block;
+    color: #cbd5f5;
+    padding: 10px;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background: #1e293b;
+}
+
+/* Main */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Topbar */
+.topbar {
+    background: #1e293b;
     padding: 10px;
 }
 
-.tab {
-    padding: 10px 20px;
-    background: #1e293b;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.active {
-    background: #0ea5e9;
-}
-
-.stats {
-    display: flex;
-    gap: 20px;
-    padding: 15px;
-}
-
-.box {
-    background: #1e293b;
-    padding: 10px 20px;
-    border-radius: 10px;
-}
-
+/* Console */
 .console {
-    margin: 20px;
-    padding: 15px;
+    flex: 1;
     background: black;
-    height: 300px;
+    padding: 15px;
     overflow-y: auto;
-    border-radius: 10px;
-    font-family: monospace;
+    font-size: 14px;
 }
 
+/* Input */
 .input-box {
     display: flex;
-    margin: 20px;
+    background: #020617;
+    padding: 10px;
 }
 
-input {
+.input-box input {
     flex: 1;
     padding: 10px;
-    background: #1e293b;
+    border: none;
+    background: black;
+    color: lime;
+}
+
+.input-box button {
+    padding: 10px;
+    background: #6366f1;
     border: none;
     color: white;
 }
-
-button {
-    padding: 10px 20px;
-    background: #0ea5e9;
-    border: none;
-    color: white;
-}
-
-.controls {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.btn {
-    padding: 15px 40px;
-    border-radius: 10px;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.start { background: green; }
-.stop { background: red; }
-.restart { background: orange; }
 </style>
 
 </head>
 
 <body>
 
-<div class="topbar">☁️ CLOUD PANEL</div>
+<div class="container">
 
-<div class="tabs">
-<div class="tab active">Console</div>
-<div class="tab">Files</div>
-<div class="tab">Plugins</div>
-<div class="tab">Mods & Worlds</div>
-<div class="tab">Players</div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3>☁️ Cloud</h3>
+        <a href="/index">Dashboard</a>
+        <a href="/admin">Admin</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+
+        <div class="topbar">
+            <h3>Server Console - {{ server_id }}</h3>
+        </div>
+
+        <!-- Console Output -->
+        <div class="console" id="console">
+            <p>Server starting...</p>
+            <p>Loading resources...</p>
+            <p style="color:lime;">Server Online ✔</p>
+        </div>
+
+        <!-- Input -->
+        <div class="input-box">
+            <input id="cmd" placeholder="Enter command...">
+            <button onclick="sendCommand()">Send</button>
+        </div>
+
+    </div>
+
 </div>
 
-<div class="stats">
-<div class="box">IP: 192.168.1.100:25565</div>
-<div class="box">CPU: 35%</div>
-<div class="box">RAM: 2048 / 4096 MB</div>
-<div class="box">Disk: 160 / 500 GB</div>
-</div>
+<script>
+function sendCommand() {
+    let input = document.getElementById("cmd");
+    let consoleBox = document.getElementById("console");
 
-<div class="console">
-[INFO] Server started successfully!<br>
-[INFO] Loading world...<br>
-[INFO] Essentials enabled<br>
-[WARNING] Low memory detected<br>
-</div>
+    let cmd = input.value;
 
-<div class="input-box">
-<input placeholder="Type your command...">
-<button>Send</button>
-</div>
+    if(cmd.trim() === "") return;
 
-<div class="controls">
-<div class="btn start">Start</div>
-<div class="btn stop">Stop</div>
-<div class="btn restart">Restart</div>
-</div>
+    let line = document.createElement("p");
+    line.style.color = "cyan";
+    line.innerText = "> " + cmd;
+
+    consoleBox.appendChild(line);
+
+    input.value = "";
+    consoleBox.scrollTop = consoleBox.scrollHeight;
+}
+</script>
 
 </body>
 </html>
